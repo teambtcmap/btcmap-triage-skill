@@ -8,7 +8,9 @@ description: >
   Handles location-submission and location-verification issues from the 
   btcmap-data repository.
 license: MIT
-compatibility: Requires Python 3.9+, internet access, Gitea API token, and agent email skill for Phase 2 outreach. Optional: Matrix skill for joining Supertagger room.
+compatibility: >
+  Requires Python 3.9+, internet access, Gitea API token, and agent email skill
+  for Phase 2 outreach. Optional: Matrix skill for joining Supertagger room.
 metadata:
   author: btcmap-community
   version: "1.0.0"
