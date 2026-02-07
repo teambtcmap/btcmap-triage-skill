@@ -229,18 +229,25 @@ class Phase1Verifier:
             #     - "bitcoin", "btc", "lightning", "crypto" keywords
             #     - Payment method sections mentioning Bitcoin
             #     - BTC/Lightning logos or payment processor badges
-            #   Score 25/25 if explicit "Bitcoin accepted", 15/25 for crypto mention,
-            #   5/25 if website exists but no mention, 0/25 if no website.
+            #   Also extract any social media links found on the page (Twitter,
+            #   Instagram, Facebook URLs) — store them in result['details']['social_links']
+            #   so they can be included as contact:* OSM tags.
+            #   Score 30/30 if explicit "Bitcoin accepted", 20/30 for crypto mention,
+            #   5/30 if website exists but no mention, 0/30 if no website.
             #   See references/CONFIDENCE_ALGORITHM.md for full scoring rubric.
             result['status'] = 'unclear'
             result['score'] = 5  # Partial credit for having a website
             result['details']['note'] = f'Website URL provided: {website}. Manual verification needed.'
+            result['details']['verified_website'] = website  # Captured for OSM contact:website tag
             result['details']['indicators_to_check'] = [
                 'Bitcoin accepted text',
                 'BTC/Lightning logos',
                 'Payment methods section',
-                'Cryptocurrency mentions'
+                'Cryptocurrency mentions',
+                'Social media links (for contact:* OSM tags)'
             ]
+            # AGENT: If you find social links on the website, populate this dict:
+            result['details']['social_links'] = {}  # e.g. {"twitter": "https://twitter.com/merchant"}
             
         except Exception as e:
             result['details']['error'] = str(e)
@@ -276,11 +283,19 @@ class Phase1Verifier:
         #   Look for: account existence, recent activity, Bitcoin-related posts/hashtags
         #   Score 20/20 if active with Bitcoin posts, 10/20 if active without,
         #   5/20 if inactive, 0/20 if no social media found.
+        #
+        #   IMPORTANT: When you find social media accounts, store them in
+        #   result['details']['discovered_handles'] — these will be included as
+        #   contact:twitter, contact:instagram, etc. OSM tags in the edit template.
+        #   Use full URLs (e.g. "https://twitter.com/merchant"), not just handles.
         #   See references/CONFIDENCE_ALGORITHM.md for full scoring rubric.
         result['status'] = 'unclear'
         result['score'] = 5  # Partial credit
         result['details']['note'] = 'Social media verification requires manual search'
         result['details']['suggested_search'] = f"Search Twitter/Instagram for: {data.get('name', '')}"
+        # AGENT: Populate with discovered accounts, e.g.:
+        #   {"twitter": "https://twitter.com/merchant", "instagram": "https://instagram.com/merchant"}
+        result['details']['discovered_handles'] = {}
         
         return result
     

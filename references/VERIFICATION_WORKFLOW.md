@@ -254,7 +254,10 @@ Maximum: 100%
 ### 7. OSM Editing
 
 For approved locations, generate OSM edit tags formatted for direct copy-paste
-into the iD editor tag panel. One `key=value` per line, no extra formatting:
+into the iD editor tag panel. One `key=value` per line, no extra formatting.
+
+Include any website or social media accounts discovered during verification
+as `contact:*` tags.
 
 **Required Tags** (copy-paste into tag editor):
 ```
@@ -268,6 +271,15 @@ payment:lightning=yes
 payment:onchain=yes
 payment:lightning_contactless=yes
 payment:lightning:operator=square
+```
+
+**Contact Tags** (include any discovered during verification):
+```
+contact:website=https://merchant-website.com
+contact:twitter=https://twitter.com/merchant
+contact:instagram=https://instagram.com/merchant
+contact:facebook=https://facebook.com/merchant
+contact:phone=+1-555-0123
 ```
 
 **Changeset Comment** (paste into changeset comment field):
