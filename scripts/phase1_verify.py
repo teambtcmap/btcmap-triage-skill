@@ -170,16 +170,18 @@ class Phase1Verifier:
             return result
         
         try:
-            # Use Overpass API to search for nodes near coordinates
-            # This is a simplified check - in production, use proper Overpass queries
             lat, lon = float(data['lat']), float(data['lon'])
             
-            # Check if location exists (simplified)
             result['details']['coordinates'] = {'lat': lat, 'lon': lon}
             result['details']['location_provided'] = True
             
-            # For now, assume we need to check OSM manually
-            # In production, implement actual Overpass API call
+            # AGENT: Use WebFetch to query the Overpass API for nearby OSM nodes:
+            #   POST https://overpass-api.de/api/interpreter
+            #   Query: [out:json][timeout:25];(node["name"](around:50,{lat},{lon});way["name"](around:50,{lat},{lon}););out body;
+            #   Then check if any returned elements match the merchant name.
+            #   Score 30/30 if name + coordinates + bitcoin tags match,
+            #   15/30 for coordinates-only match, 0/30 if not found.
+            #   See references/CONFIDENCE_ALGORITHM.md for full scoring rubric.
             result['status'] = 'unclear'
             result['score'] = 10  # Partial credit for having coordinates
             result['details']['note'] = 'Coordinates provided but OSM existence requires manual verification'
@@ -211,8 +213,15 @@ class Phase1Verifier:
         result['details']['website'] = website
         
         try:
-            # Fetch website (simplified - in production use proper scraping)
-            # For now, assume we can't scrape without external tools
+            # AGENT: Use WebFetch to scrape the merchant website:
+            #   WebFetch GET {website}
+            #   Search the returned content for Bitcoin acceptance indicators:
+            #     - "bitcoin", "btc", "lightning", "crypto" keywords
+            #     - Payment method sections mentioning Bitcoin
+            #     - BTC/Lightning logos or payment processor badges
+            #   Score 25/25 if explicit "Bitcoin accepted", 15/25 for crypto mention,
+            #   5/25 if website exists but no mention, 0/25 if no website.
+            #   See references/CONFIDENCE_ALGORITHM.md for full scoring rubric.
             result['status'] = 'unclear'
             result['score'] = 5  # Partial credit for having a website
             result['details']['note'] = f'Website URL provided: {website}. Manual verification needed.'
@@ -251,7 +260,13 @@ class Phase1Verifier:
             'facebook': r'facebook\.com/(\w+)',
         }
         
-        # For now, assume we need to search manually
+        # AGENT: Use WebFetch to check social media presence:
+        #   1. Search Twitter/X: WebFetch GET https://twitter.com/search?q={merchant_name}
+        #   2. Search Instagram: WebFetch GET https://www.instagram.com/{handle}/
+        #   Look for: account existence, recent activity, Bitcoin-related posts/hashtags
+        #   Score 20/20 if active with Bitcoin posts, 10/20 if active without,
+        #   5/20 if inactive, 0/20 if no social media found.
+        #   See references/CONFIDENCE_ALGORITHM.md for full scoring rubric.
         result['status'] = 'unclear'
         result['score'] = 5  # Partial credit
         result['details']['note'] = 'Social media verification requires manual search'
@@ -273,7 +288,13 @@ class Phase1Verifier:
             result['details']['error'] = 'No merchant name provided'
             return result
         
-        # Generate search links
+        # AGENT: Use WebFetch to cross-reference on other platforms:
+        #   1. Google Maps: WebFetch GET https://www.google.com/maps/search/{name}
+        #   2. Yelp: WebFetch GET https://www.yelp.com/search?find_desc={name}
+        #   Check if business is listed, and if name/address/phone are consistent.
+        #   Score 15/15 if on 3+ platforms with consistent info, 10/15 for 2,
+        #   5/15 for 1, 0/15 if not found anywhere.
+        #   See references/CONFIDENCE_ALGORITHM.md for full scoring rubric.
         name = data['name']
         address = data.get('address', '')
         

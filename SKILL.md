@@ -92,19 +92,26 @@ For each issue, the skill automatically checks:
 
 ### Phase 2: Outreach Verification
 
-If Phase 1 confidence is below threshold (default: 70%), the skill initiates outreach:
+Phase 2 is **only triggered** if Phase 1 confidence is below threshold (default: 70%).
+
+**Capability check**: Before starting Phase 2, check whether you have email-sending
+and social media DM capabilities. If you do not:
+- Set `enable_phase2: false` in config, OR
+- Skip the outreach steps and post the drafted messages in the Gitea comment
+  for a human reviewer to send manually.
+- Note the skipped checks in the final report with reason "Agent lacks email/DM capability".
+
+If you **do** have outreach capability:
 
 1. **Email Verification** (+20% if confirmed)
    - Draft professional verification email
    - Send to submitted contact email
-   - Wait for response
+   - Wait for response (default timeout: 24 hours)
 
 2. **Social Media DM** (+15% if confirmed)
    - Draft direct message for Twitter/Instagram
    - Send to verified merchant account
    - Track response
-
-**Note**: Phase 2 relies on the agent's existing email skill.
 
 ### Confidence Scoring
 
@@ -128,6 +135,25 @@ Final Score Thresholds:
 ```
 
 All weights are configurable in `config/config.yaml`.
+
+## Tool Mapping
+
+Each verification step maps to a specific tool from `allowed-tools`:
+
+| Step | Tool | Usage |
+|------|------|-------|
+| Fetch Gitea issues | `WebFetch` | `GET https://gitea.btcmap.org/api/v1/repos/teambtcmap/btcmap-data/issues?state=open&labels=type/location-submission` with `Authorization: token {GITEA_TOKEN}` header |
+| Post Gitea comment | `WebFetch` | `POST .../issues/{number}/comments` with JSON body `{"body": "<report markdown>"}` |
+| OSM verification | `WebFetch` | `POST https://overpass-api.de/api/interpreter` with Overpass QL query (see `scripts/osm_client.py`) |
+| Website check | `WebFetch` | `GET {merchant_website}` and search returned content for Bitcoin keywords |
+| Social media check | `WebFetch` | `GET https://twitter.com/search?q={merchant_name}` or similar |
+| Cross-reference | `WebFetch` | `GET https://www.google.com/maps/search/{merchant_name}` and Yelp search |
+| Parse issue body | `Read` | Read `scripts/phase1_verify.py` for regex patterns, or parse directly |
+| Run triage script | `Bash` | `python3 scripts/triage.py --config config/config.yaml` |
+| Edit config | `Write` | Write Gitea token and custom weights to `config/config.yaml` |
+
+The `scripts/` directory contains **reference implementations** with `# AGENT:` comments
+marking where you should use the tools above instead of the stub/mock code.
 
 ## Workflow
 
@@ -156,63 +182,7 @@ All weights are configurable in `config/config.yaml`.
    - Recommendation posted
    - OSM edit suggestions provided
 
-### Example Run
-
-```
-$ python scripts/triage.py
-BTC Map Triage Bot
-==================
-
-How many issues would you like to process? [10]: 5
-
-Fetching 5 open issues from btcmap-data...
-Found 5 issues to process.
-
-Processing issue #12079: Coldwater Mountain Brewpub
-[Phase 1] Checking OSM... ✓ Found
-[Phase 1] Checking website... ✓ Bitcoin accepted
-[Phase 1] Checking social media... ✓ Active Twitter
-[Phase 1] Cross-referencing... ✓ Google Maps match
-[Phase 1] Validating data... ✓ All fields valid
-
-Phase 1 Confidence: 70%
-Posting Phase 1 report to Gitea...
-
-[Phase 2] Sending verification email...
-Email sent to: info@coldwatermountainbrewpub.com
-Waiting for response... (timeout: 24 hours)
-
-Response received: Confirmed Bitcoin acceptance
-
-Final Confidence: 90% (HIGH)
-Recommendation: APPROVE
-
-Posting final report to Gitea...
-OSM edit suggestions generated.
-
----
-
-Processing issue #12080: Borjulink Communications...
-[Phase 1] Checking OSM... ✗ Not found
-[Phase 1] Checking website... ✗ No website provided
-[Phase 1] Checking social media... ✗ Not found
-[Phase 1] Cross-referencing... ✗ Not on Google Maps
-[Phase 1] Validating data... ✓ Address format valid
-
-Phase 1 Confidence: 5%
-Posting Phase 1 report to Gitea...
-
-Recommendation: NEEDS MORE INFO
-Missing: Website, social media, or phone verification needed.
-
----
-
-Completed processing 5 issues.
-Summary:
-- Approved: 1
-- Needs Review: 3
-- Rejected: 1
-```
+For a detailed example run with sample output, see [references/EXAMPLES_AND_CUSTOMIZATION.md](references/EXAMPLES_AND_CUSTOMIZATION.md#example-run).
 
 ## Gitea Integration
 
@@ -293,42 +263,8 @@ Changeset Comment:
 
 ## Customization
 
-### Adjusting Weights
-
-Edit `config/config.yaml`:
-
-```yaml
-weights:
-  osm_check: 35          # Increase if OSM accuracy is critical
-  website_check: 20      # Decrease if many merchants lack websites
-  social_media: 15       # Adjust based on your region
-  cross_reference: 20
-  data_consistency: 10
-```
-
-### Changing Thresholds
-
-```yaml
-thresholds:
-  high: 85        # Lower if you want more auto-approvals
-  medium: 65      # Adjust based on your risk tolerance
-  low: 40
-```
-
-### Custom Verification Checks
-
-Add custom checks by extending `scripts/phase1_verify.py`:
-
-```python
-def custom_check(issue_data):
-    # Your custom verification logic
-    score = calculate_score()
-    return {
-        'status': 'pass' if score > 50 else 'fail',
-        'score': score,
-        'details': {...}
-    }
-```
+For detailed customization instructions (adjusting weights, changing thresholds,
+adding custom verification checks), see [references/EXAMPLES_AND_CUSTOMIZATION.md](references/EXAMPLES_AND_CUSTOMIZATION.md#customization).
 
 ## Best Practices
 
@@ -344,6 +280,7 @@ def custom_check(issue_data):
 - [Confidence Algorithm](references/CONFIDENCE_ALGORITHM.md)
 - [Example Issues](references/EXAMPLE_ISSUES.md)
 - [Gitea API Reference](references/GITEA_API_REFERENCE.md)
+- [Examples and Customization](references/EXAMPLES_AND_CUSTOMIZATION.md)
 
 ## Troubleshooting
 

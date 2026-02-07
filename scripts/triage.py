@@ -11,6 +11,7 @@ Usage:
 """
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -216,7 +217,7 @@ class TriageOrchestrator:
         else:
             template = self._default_phase1_template()
         
-        # Format template
+        # Format template with variables that match both external and default templates
         report = template.format(
             merchant_name=issue['title'],
             issue_number=issue['number'],
@@ -232,7 +233,6 @@ class TriageOrchestrator:
             crossref_score=phase1_results['checks']['cross_reference']['score'],
             consistency_status=phase1_results['checks']['consistency']['status'],
             consistency_score=phase1_results['checks']['consistency']['score'],
-            details=phase1_results
         )
         
         return report
@@ -246,7 +246,7 @@ class TriageOrchestrator:
         else:
             template = self._default_final_template()
         
-        # Format template
+        # Format template with variables that match both external and default templates
         report = template.format(
             merchant_name=issue['title'],
             issue_number=issue['number'],
@@ -256,7 +256,6 @@ class TriageOrchestrator:
             recommendation=result['recommendation'],
             phase2_email_status=result.get('phase2', {}).get('email', {}).get('status', 'N/A'),
             phase2_dm_status=result.get('phase2', {}).get('social_dm', {}).get('status', 'N/A'),
-            details=result
         )
         
         return report
@@ -359,5 +358,4 @@ def main():
 
 
 if __name__ == '__main__':
-    import os
     main()

@@ -48,8 +48,11 @@ class OSMClient:
         out skel qt;
         """
         
-        # In production, make actual Overpass API call
-        # For now, return empty list (will be handled by manual verification)
+        # AGENT: Make the actual Overpass API call using WebFetch:
+        #   WebFetch POST https://overpass-api.de/api/interpreter
+        #   Body: data={query} (URL-encoded)
+        #   Response: JSON with "elements" array containing matching OSM nodes/ways
+        #   Rate limit: max 1 request per 5 seconds to Overpass API
         print(f"  [OSM] Searching within {radius}m of {lat}, {lon}")
         time.sleep(0.5)  # Rate limiting
         
@@ -67,7 +70,9 @@ class OSMClient:
         """
         url = f"{self.api_url}/{osm_type}/{osm_id}"
         
-        # In production, fetch actual OSM data
+        # AGENT: Fetch OSM element data using WebFetch:
+        #   WebFetch GET {url}.json
+        #   Response: JSON with "elements" array; check "tags" for currency:XBT, payment:lightning, etc.
         print(f"  [OSM] Checking tags for {osm_type} #{osm_id}")
         
         return {

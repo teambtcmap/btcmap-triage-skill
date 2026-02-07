@@ -61,15 +61,17 @@ class GiteaClient:
                 'Accept': 'application/json'
             }
             
-            # In production, this would make actual HTTP request
-            # For now, return mock data for demonstration
+            # AGENT: This is a reference implementation. Make the actual API call using WebFetch:
+            #   WebFetch GET {url} with headers: Authorization: token {self.token}
+            #   Query params: state, page, limit, labels (comma-separated)
+            #   Response: JSON array of issue objects (see references/GITEA_API_REFERENCE.md)
             print(f"  [API] GET {url}")
             print(f"  [API] Params: {params}")
             
-            # Simulate API call
+            # Simulate API call (replace with actual WebFetch in agent execution)
             time.sleep(0.5)
             
-            # Return mock issues for demonstration
+            # Mock data for demonstration/testing only
             mock_issues = self._get_mock_issues(limit - len(issues))
             
             for issue in mock_issues:
@@ -112,14 +114,17 @@ class GiteaClient:
         
         data = {'body': body}
         
-        # In production, this would make actual HTTP request
+        # AGENT: Make the actual API call using WebFetch:
+        #   WebFetch POST {url} with headers and JSON body: {"body": "<markdown>"}
+        #   Response: JSON object with "id" field (the new comment ID)
+        #   See references/GITEA_API_REFERENCE.md for full response format
         print(f"  [API] POST {url}")
         print(f"  [API] Body length: {len(body)} characters")
         
-        # Simulate API call
+        # Simulate API call (replace with actual WebFetch in agent execution)
         time.sleep(0.5)
         
-        # Return mock comment ID
+        # Mock comment ID for demonstration only
         return 12345
     
     def update_comment(self, comment_id: int, body: str) -> bool:
@@ -142,10 +147,12 @@ class GiteaClient:
         
         data = {'body': body}
         
-        # In production, this would make actual HTTP request
+        # AGENT: Make the actual API call using WebFetch:
+        #   WebFetch PATCH {url} with headers and JSON body: {"body": "<markdown>"}
+        #   Response: JSON object with updated comment
         print(f"  [API] PATCH {url}")
         
-        # Simulate API call
+        # Simulate API call (replace with actual WebFetch in agent execution)
         time.sleep(0.5)
         
         return True
@@ -168,9 +175,12 @@ class GiteaClient:
             'Accept': 'application/json'
         }
         
+        # AGENT: The Gitea labels endpoint expects label IDs (integers), not names.
+        #   First fetch available labels: GET /api/v1/repos/{repo}/labels
+        #   Then find the ID for the label name, and POST with: {"labels": [<label_id>]}
+        #   See references/GITEA_API_REFERENCE.md for label endpoints
         data = {'labels': [label]}
         
-        # In production, this would make actual HTTP request
         print(f"  [API] POST {url} - Add label: {label}")
         
         return True
@@ -194,7 +204,8 @@ class GiteaClient:
         
         data = {'state': 'closed'}
         
-        # In production, this would make actual HTTP request
+        # AGENT: Make the actual API call using WebFetch:
+        #   WebFetch PATCH {url} with headers and JSON body: {"state": "closed"}
         print(f"  [API] PATCH {url} - Close issue")
         
         return True

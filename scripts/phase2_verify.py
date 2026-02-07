@@ -87,10 +87,12 @@ class Phase2Verifier:
         result['details']['email_subject'] = email_subject
         result['details']['email_body'] = email_body
         
+        # AGENT: If you have email-sending capability, send the email to {contact}.
+        #   Use the drafted subject and body above.
+        #   If you do NOT have email capability, post the draft in the Gitea comment
+        #   so a human reviewer can send it manually.
         if self.auto_send:
             print(f"    Sending email to: {contact}")
-            # In production, this would use the agent's email skill
-            # For now, we'll draft it
             result['details']['action'] = 'sent'
             result['details']['note'] = 'Email sent (requires email skill)'
             result['status'] = 'sent'
@@ -151,9 +153,10 @@ class Phase2Verifier:
         return result
     
     def _extract_email_from_website(self, website: str) -> str:
-        """Attempt to extract email from website (placeholder)."""
-        # In production, this would scrape the website for contact info
-        # For now, return empty
+        """Attempt to extract email from website."""
+        # AGENT: Use WebFetch to scrape the merchant website for contact info:
+        #   WebFetch GET {website}
+        #   Search for mailto: links, "contact us" pages, or email patterns in the HTML.
         return ''
     
     def _generate_email_template(self, issue: Dict, data: Dict) -> str:
@@ -190,11 +193,13 @@ Issue Reference: #{issue['number']}
         return template
     
     def check_responses(self, issue_number: int) -> Dict:
-        """Check for responses to outreach (placeholder)."""
-        # In production, this would:
-        # 1. Check email inbox for replies
-        # 2. Check social media DMs
-        # 3. Parse responses for confirmation/denial
+        """Check for responses to outreach."""
+        # AGENT: This method is called after waiting for outreach responses.
+        #   If you have email-reading capability, check inbox for replies to the
+        #   verification email. If you have social media access, check DMs.
+        #   Parse responses for confirmation ("yes we accept Bitcoin") or
+        #   denial ("no we don't accept Bitcoin").
+        #   If no response capability, skip Phase 2 and note it in the report.
         
         return {
             'email_response': None,
