@@ -80,10 +80,10 @@ btcmap-triage/
 
 ### Phase 1: Automated Verification (0-100%)
 
-1. **OSM Verification** (30%): Check if merchant exists in OpenStreetMap
-2. **Website Check** (25%): Scrape website for Bitcoin acceptance
+1. **OSM Verification** (20%): Bonus if merchant already exists in OpenStreetMap (absence is not heavily penalized)
+2. **Website Check** (30%): Primary signal — scrape website for Bitcoin acceptance
 3. **Social Media** (20%): Check Twitter/Instagram presence
-4. **Cross-Reference** (15%): Verify on Google Maps, Yelp
+4. **Cross-Reference** (20%): Verify on Google Maps, Yelp
 5. **Data Consistency** (10%): Validate address, phone, hours format
 
 ### Phase 2: Outreach Verification (Bonus +0-35%)
@@ -137,16 +137,16 @@ rate_limiting:
 
 ```
 Merchant: Pizza Palace Downtown
-- OSM: Not exists (0/30)
-- Website: Confirms Bitcoin (25/25)
+- OSM: Not on OSM (5/20 baseline)
+- Website: Confirms Bitcoin (30/30)
 - Social: Active with BTC posts (20/20)
-- Cross-ref: Google Maps + Yelp (15/15)
+- Cross-ref: Google Maps + Yelp (20/20)
 - Consistency: All valid (10/10)
 
-Phase 1: 70%
+Phase 1: 85%
 Phase 2: Email confirms (+20%)
 
-Final: 90% - HIGH CONFIDENCE
+Final: 100% - HIGH CONFIDENCE
 Recommendation: Approve
 ```
 
@@ -154,34 +154,33 @@ Recommendation: Approve
 
 ```
 Merchant: Coffee Corner
-- OSM: Not exists (0/30)
-- Website: Confirms Bitcoin (25/25)
+- OSM: Not on OSM (5/20 baseline)
+- Website: Confirms Bitcoin (30/30)
 - Social: Active, no BTC mention (15/20)
-- Cross-ref: Google Maps only (5/15)
+- Cross-ref: Google Maps only (5/20)
 - Consistency: All valid (10/10)
 
-Phase 1: 55%
-Phase 2: Not triggered (below 70% threshold)
+Phase 1: 65%
+Phase 2: Email confirms (+20%)
 
-Final: 55% - LOW CONFIDENCE
-Recommendation: Needs Review
-Action: Request social media handles
+Final: 85% - MEDIUM CONFIDENCE
+Recommendation: Approve with Notes
 ```
 
 ### Low Confidence (0-49%)
 
 ```
 Merchant: Local Electronics Shop
-- OSM: Not exists (0/30)
-- Website: None (0/25)
+- OSM: Not on OSM (5/20 baseline)
+- Website: None (0/30)
 - Social: Not found (0/20)
-- Cross-ref: Not found (0/15)
+- Cross-ref: Not found (0/20)
 - Consistency: Coordinates only (4/10)
 
-Phase 1: 4%
+Phase 1: 9%
 Phase 2: Email sent (+20% if confirmed)
 
-Final: 4% (or 24% with email) - VERY LOW
+Final: 9% (or 29% with email) - VERY LOW
 Recommendation: Request More Info
 Action: Ask for website or phone verification
 ```

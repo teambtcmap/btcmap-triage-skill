@@ -14,8 +14,11 @@ Issues are created in the btcmap-data repository via:
 
 ### 2. Phase 1: Automated Verification
 
-#### 2.1 OSM Verification (30% weight)
-**Purpose**: Verify if merchant exists in OpenStreetMap
+#### 2.1 OSM Verification (20% weight)
+**Purpose**: Check if merchant already exists in OpenStreetMap
+
+Many legitimate businesses are not yet on OSM. This check is a **bonus for
+existing presence**, not a penalty for absence.
 
 **Checks**:
 - Search for existing node/way within 50m of coordinates
@@ -24,16 +27,16 @@ Issues are created in the btcmap-data repository via:
 - Check for existing `currency:XBT` tags
 
 **Scoring**:
-- Full match (name + coordinates + address): 30/30
-- Partial match (coordinates only): 15/30
-- No match: 0/30
+- Full match (name + coordinates + bitcoin tags): 20/20
+- Partial match (coordinates only): 12/20
+- Not found on OSM: 5/20 (baseline — absence is common)
 
 **Actions**:
 - If exists with Bitcoin tags: Recommend closing issue
 - If exists without Bitcoin tags: Suggest adding tags
-- If not exists: Continue to other checks
+- If not exists: Continue to other checks (no heavy penalty)
 
-#### 2.2 Website Verification (25% weight)
+#### 2.2 Website Verification (30% weight)
 **Purpose**: Verify Bitcoin acceptance via merchant website
 
 **Checks**:
@@ -44,10 +47,10 @@ Issues are created in the btcmap-data repository via:
 - Look for cryptocurrency mentions
 
 **Scoring**:
-- Explicit "Bitcoin accepted" mention: 25/25
-- Cryptocurrency mention (not specific): 15/25
-- Website exists but no mention: 5/25
-- No website: 0/25
+- Explicit "Bitcoin accepted" mention: 30/30
+- Cryptocurrency mention (not specific): 20/30
+- Website exists but no mention: 5/30
+- No website: 0/30
 
 **Red Flags**:
 - "We don't accept Bitcoin" text
@@ -75,7 +78,7 @@ Issues are created in the btcmap-data repository via:
 - Engagement (replies, likes)
 - Bitcoin hashtags (#Bitcoin, #BTC, #LightningNetwork)
 
-#### 2.4 Cross-Reference Verification (15% weight)
+#### 2.4 Cross-Reference Verification (20% weight)
 **Purpose**: Verify business existence on other platforms
 
 **Checks**:
@@ -85,10 +88,10 @@ Issues are created in the btcmap-data repository via:
 - Local business directories
 
 **Scoring**:
-- Listed on 3+ platforms: 15/15
-- Listed on 2 platforms: 10/15
-- Listed on 1 platform: 5/15
-- Not listed: 0/15
+- Listed on 3+ platforms: 20/20
+- Listed on 2 platforms: 10/20
+- Listed on 1 platform: 5/20
+- Not listed: 0/20
 
 **Consistency Check**:
 - Name matches across platforms
@@ -220,10 +223,10 @@ Maximum: 100%
 **Score**: {score}%
 
 ### Automated Checks:
-- OSM: {status} ({score}/30)
-- Website: {status} ({score}/25)
+- OSM: {status} ({score}/20)
+- Website: {status} ({score}/30)
 - Social: {status} ({score}/20)
-- Cross-Ref: {status} ({score}/15)
+- Cross-Ref: {status} ({score}/20)
 - Consistency: {status} ({score}/10)
 
 [Details for each check]
@@ -250,15 +253,16 @@ Maximum: 100%
 
 ### 7. OSM Editing
 
-For approved locations, generate OSM edit suggestions:
+For approved locations, generate OSM edit tags formatted for direct copy-paste
+into the iD editor tag panel. One `key=value` per line, no extra formatting:
 
-**Required Tags**:
+**Required Tags** (copy-paste into tag editor):
 ```
 currency:XBT=yes
 check_date:currency:XBT=YYYY-MM-DD
 ```
 
-**Optional Tags**:
+**Optional Tags** (add as applicable):
 ```
 payment:lightning=yes
 payment:onchain=yes
@@ -266,11 +270,9 @@ payment:lightning_contactless=yes
 payment:lightning:operator=square
 ```
 
-**Changeset Comment**:
+**Changeset Comment** (paste into changeset comment field):
 ```
-Add Bitcoin acceptance for {merchant_name}
-#btcmap issue:{issue_number}
-Source: Verified via website and email confirmation
+Add Bitcoin acceptance for {merchant_name} #btcmap issue:{issue_number} Source: Verified via website and email confirmation
 ```
 
 ### 8. Issue Resolution
@@ -296,7 +298,7 @@ Source: Verified via website and email confirmation
 ### 9. Edge Cases
 
 #### Website Unavailable
-- Score: 0/25 for website check
+- Score: 0/30 for website check
 - Note: "Website timeout"
 - Continue with other checks
 

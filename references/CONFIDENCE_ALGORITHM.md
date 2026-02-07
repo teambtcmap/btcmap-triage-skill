@@ -20,10 +20,10 @@ Where each component is 0 to its maximum weight
 
 | Check | Weight | Rationale |
 |-------|--------|-----------|
-| OSM Verification | 30% | Most reliable - existing OSM data is community-verified |
-| Website Check | 25% | Primary source - merchants control their own website |
+| OSM Verification | 20% | Bonus for existing presence - many legitimate businesses are not yet on OSM |
+| Website Check | 30% | Primary signal - merchants control their own website |
 | Social Media | 20% | Secondary validation - shows active business presence |
-| Cross-Reference | 15% | Third-party validation - independent verification |
+| Cross-Reference | 20% | Third-party validation - independent confirmation business exists |
 | Data Consistency | 10% | Quality indicator - properly formatted data |
 
 **Total: 100%**
@@ -68,10 +68,10 @@ The final score is capped at 100%.
 - **Action**: Generate OSM edit template
 - **Human Review**: Optional spot-check only
 - **Typical Scenario**: 
-  - Existing in OSM with Bitcoin tags (30%)
-  - Website confirms Bitcoin (25%)
+  - Existing in OSM with Bitcoin tags (20%)
+  - Website confirms Bitcoin (30%)
   - Active social media (20%)
-  - Listed on Google Maps (15%)
+  - Listed on Google Maps (20%)
   - All data valid (10%)
   - **Total**: 100%
 
@@ -80,76 +80,81 @@ The final score is capped at 100%.
 - **Action**: Generate OSM edit template, note caveats
 - **Human Review**: Quick review recommended
 - **Typical Scenario**:
-  - Not in OSM yet (0%)
-  - Website confirms Bitcoin (25%)
+  - Not in OSM yet (5% baseline)
+  - Website confirms Bitcoin (30%)
   - Active social media (20%)
-  - Listed on Google Maps (15%)
+  - Listed on Google Maps (20%)
   - All data valid (10%)
-  - **Total**: 70%
+  - **Total**: 85%
 
 #### LOW (50-69%)
 - **Recommendation**: Needs Human Review
 - **Action**: Request additional verification
 - **Human Review**: Required
 - **Typical Scenario**:
-  - Not in OSM (0%)
+  - Not in OSM (5% baseline)
   - Website exists but no Bitcoin mention (10%)
   - Social media inactive (5%)
   - Listed on 1 platform (5%)
   - Data has minor issues (5%)
-  - **Total**: 25% (triggers Phase 2)
-  - After email confirmation: +20% = 45% → still LOW
+  - **Total**: 30% (triggers Phase 2)
+  - After email confirmation: +20% = 50% → LOW
 
 #### VERY LOW (0-49%)
 - **Recommendation**: Reject or Request More Info
 - **Action**: Post detailed report requesting missing info
 - **Human Review**: Required
 - **Typical Scenario**:
-  - Not in OSM (0%)
+  - Not in OSM (5% baseline)
   - No website (0%)
   - No social media (0%)
   - Not listed anywhere (0%)
   - Only coordinates valid (4%)
-  - **Total**: 4%
+  - **Total**: 9%
 
 ## Scoring Details
 
-### OSM Verification (30 points)
+### OSM Verification (20 points)
+
+Many legitimate businesses are not yet mapped in OpenStreetMap. This check is
+a **bonus for existing presence**, not a penalty for absence. A business that
+is not on OSM should still be able to score well from the other checks.
 
 ```python
-def score_osm(osm_data):
-    score = 0
+def score_osm(osm_data, max_score=20):
+    # Baseline: don't penalize absence from OSM
+    score = max(5, int(max_score * 0.25))
     
-    # Location exists in OSM
+    # Location exists in OSM — strong positive signal
     if osm_data['exists']:
-        score += 15
+        score = int(max_score * 0.5)  # 10/20
         
         # Coordinates match (within 50m)
         if osm_data['coordinates_match']:
-            score += 5
+            score += int(max_score * 0.15)  # +3
             
         # Name matches
         if osm_data['name_matches']:
-            score += 5
+            score += int(max_score * 0.15)  # +3
             
-        # Has Bitcoin tags
+        # Has Bitcoin tags (already verified by community)
         if osm_data['has_bitcoin_tags']:
-            score += 5
+            score += int(max_score * 0.2)  # +4
     
-    return min(score, 30)
+    return min(score, max_score)
 ```
 
 **Interpretation**:
-- 30/30: Exists in OSM with Bitcoin tags
-- 25/30: Exists, matches coordinates and name
-- 20/30: Exists, coordinates match
-- 15/30: Exists but different location/name
-- 0/30: Not in OSM
+- 20/20: Exists in OSM with Bitcoin tags (already community-verified)
+- 16/20: Exists, matches coordinates and name
+- 13/20: Exists, coordinates match
+- 10/20: Exists but different location/name
+- 5/20: Not in OSM (baseline — absence is common and not heavily penalized)
 
-### Website Check (25 points)
+### Website Check (30 points)
 
 ```python
-def score_website(website_data):
+def score_website(website_data, max_score=30):
     score = 0
     
     if not website_data['url']:
@@ -161,22 +166,22 @@ def score_website(website_data):
         
         # Bitcoin explicitly mentioned
         if website_data['bitcoin_mentioned']:
-            score += 20
+            score += 25
         elif website_data['cryptocurrency_mentioned']:
-            score += 10
+            score += 15
         else:
             score += 5  # Website exists but no mention
     
-    return min(score, 25)
+    return min(score, max_score)
 ```
 
 **Interpretation**:
-- 25/25: "Bitcoin accepted" explicitly stated
-- 20/25: Strong Bitcoin indicators (logos, payment page)
-- 15/25: Cryptocurrency mentioned (not specific)
-- 10/25: Website accessible, neutral
-- 5/25: Website accessible, no crypto mention
-- 0/25: No website or inaccessible
+- 30/30: "Bitcoin accepted" explicitly stated
+- 25/30: Strong Bitcoin indicators (logos, payment page)
+- 20/30: Cryptocurrency mentioned (not specific)
+- 10/30: Website accessible, neutral
+- 5/30: Website accessible, no crypto mention
+- 0/30: No website or inaccessible
 
 ### Social Media (20 points)
 
@@ -208,10 +213,10 @@ def score_social(social_data):
 - 5/20: Account exists but empty
 - 0/20: No social media presence
 
-### Cross-Reference (15 points)
+### Cross-Reference (20 points)
 
 ```python
-def score_crossref(crossref_data):
+def score_crossref(crossref_data, max_score=20):
     score = 0
     
     platforms = crossref_data['platforms_found']
@@ -225,16 +230,17 @@ def score_crossref(crossref_data):
     
     # Bonus for consistency across platforms
     if crossref_data['information_consistent']:
-        score = min(score + 5, 15)
+        score = min(score + 5, max_score)
     
     return score
 ```
 
 **Interpretation**:
-- 15/15: Listed on 3+ platforms with consistent info
-- 10/15: Listed on 2 platforms
-- 5/15: Listed on 1 platform
-- 0/15: Not found on any platform
+- 20/20: Listed on 3+ platforms with consistent info
+- 15/20: Listed on 3+ platforms (some inconsistency)
+- 10/20: Listed on 2 platforms
+- 5/20: Listed on 1 platform
+- 0/20: Not found on any platform
 
 ### Data Consistency (10 points)
 
@@ -373,25 +379,25 @@ def handle_duplicate(existing_issue):
 ### Regional Variations
 
 **Developed Countries** (US, EU, etc.):
-- OSM: 25% (high coverage)
+- OSM: 20% (high coverage, but still many unmapped businesses)
 - Website: 30% (businesses have websites)
 - Social: 20% (standard)
-- Cross-ref: 20% (many platforms)
+- Cross-ref: 25% (many platforms)
 - Consistency: 5%
 
 **Developing Countries**:
-- OSM: 35% (lower coverage, more important)
-- Website: 15% (fewer websites)
+- OSM: 15% (lower coverage — even less reason to penalize absence)
+- Website: 20% (fewer websites)
 - Social: 25% (primary online presence)
-- Cross-ref: 15% (limited platforms)
-- Consistency: 10%
+- Cross-ref: 25% (limited platforms but Google Maps important)
+- Consistency: 15%
 
 **Rural Areas**:
-- OSM: 35% (often only source)
-- Website: 10% (rarely have websites)
-- Social: 20% (Facebook common)
-- Cross-ref: 20% (Google Maps critical)
-- Consistency: 15%
+- OSM: 10% (very low coverage — absence is expected)
+- Website: 15% (rarely have websites)
+- Social: 25% (Facebook common)
+- Cross-ref: 30% (Google Maps critical for confirming existence)
+- Consistency: 20%
 
 ## Confidence Calibration
 
@@ -444,10 +450,10 @@ false_negative_rate = (
 
 ```yaml
 weights:
-  osm_check: 30
-  website_check: 25
+  osm_check: 20           # Bonus for existing presence (absence is common)
+  website_check: 30       # Primary signal
   social_media: 20
-  cross_reference: 15
+  cross_reference: 20     # Confirms business exists independently
   data_consistency: 10
 
 phase2_weights:
@@ -463,16 +469,16 @@ thresholds:
 ### Scoring Example
 
 ```python
-# Example: High confidence merchant
+# Example: High confidence merchant (existing on OSM)
 phase1 = {
-    'osm': {'score': 30, 'exists': True, 'has_bitcoin_tags': True},
-    'website': {'score': 25, 'bitcoin_mentioned': True},
+    'osm': {'score': 20, 'exists': True, 'has_bitcoin_tags': True},
+    'website': {'score': 30, 'bitcoin_mentioned': True},
     'social': {'score': 20, 'bitcoin_posts': True},
-    'crossref': {'score': 15, 'platforms': 3},
+    'crossref': {'score': 20, 'platforms': 3},
     'consistency': {'score': 10, 'all_valid': True}
 }
 
-phase1_score = 30 + 25 + 20 + 15 + 10  # = 100%
+phase1_score = 20 + 30 + 20 + 20 + 10  # = 100%
 
 # Phase 2 not needed (100% >= 70% threshold)
 final_score = 100%
@@ -480,24 +486,19 @@ recommendation = "HIGH CONFIDENCE - Recommend Approval"
 ```
 
 ```python
-# Example: Medium confidence merchant
+# Example: Medium confidence merchant (NOT on OSM — still scores well)
 phase1 = {
-    'osm': {'score': 0, 'exists': False},
-    'website': {'score': 25, 'bitcoin_mentioned': True},
+    'osm': {'score': 5, 'exists': False},        # Baseline, not penalized
+    'website': {'score': 30, 'bitcoin_mentioned': True},
     'social': {'score': 15, 'active': True, 'bitcoin_posts': False},
     'crossref': {'score': 10, 'platforms': 2},
     'consistency': {'score': 10, 'all_valid': True}
 }
 
-phase1_score = 0 + 25 + 15 + 10 + 10  # = 60%
+phase1_score = 5 + 30 + 15 + 10 + 10  # = 70%
 
-# Phase 2 triggered (60% < 70% threshold)
-phase2 = {
-    'email': {'score': 20, 'confirmed': True},
-    'dm': {'score': 0, 'no_response': True}
-}
-
-final_score = 60 + 20 + 0  # = 80%
+# Phase 2 not triggered (70% >= 70% threshold)
+final_score = 70%
 recommendation = "MEDIUM CONFIDENCE - Recommend Approval with Notes"
 ```
 

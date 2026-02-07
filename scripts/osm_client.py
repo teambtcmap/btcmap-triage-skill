@@ -116,12 +116,17 @@ class OSMClient:
         return f"{self.base_url}/#map={zoom}/{lat}/{lon}"
     
     def suggest_tags(self, 
+                    merchant_name: Optional[str] = None,
                     payment_lightning: bool = True,
                     payment_onchain: bool = True,
                     check_date: Optional[str] = None) -> Dict:
         """Generate suggested OSM tags for Bitcoin acceptance.
         
+        Returns tags in insertion order so they can be copy-pasted directly
+        into the OSM iD editor tag panel as key=value lines.
+        
         Args:
+            merchant_name: Merchant name (included if the node is new)
             payment_lightning: Accept Lightning payments
             payment_onchain: Accept on-chain payments
             check_date: Verification date (ISO format)
@@ -129,16 +134,20 @@ class OSMClient:
         Returns:
             Dictionary of suggested tags
         """
-        tags = {
-            'currency:XBT': 'yes',
-            'check_date:currency:XBT': check_date or time.strftime('%Y-%m-%d')
-        }
+        tags = {}
+        
+        if merchant_name:
+            tags['name'] = merchant_name
+        
+        tags['currency:XBT'] = 'yes'
         
         if payment_lightning:
             tags['payment:lightning'] = 'yes'
         
         if payment_onchain:
             tags['payment:onchain'] = 'yes'
+        
+        tags['check_date:currency:XBT'] = check_date or time.strftime('%Y-%m-%d')
         
         return tags
     
@@ -258,26 +267,34 @@ Source: Verified via {methods_str}"""
     def format_osm_edit_template(self, 
                                  tags: Dict,
                                  changeset_comment: str) -> str:
-        """Format OSM edit information for display.
+        """Format OSM edit information for direct copy-paste into the iD editor.
+        
+        Output format uses one key=value pair per line with no indentation or
+        headers, so taggers can copy the block directly into the OSM tag editor.
         
         Args:
             tags: Dictionary of tags
             changeset_comment: Changeset comment
             
         Returns:
-            Formatted string
+            Formatted string ready for copy-paste into OSM iD editor
         """
-        lines = ["Suggested OSM Tags:", ""]
+        # Tags block: one key=value per line, directly pasteable into iD editor
+        tag_lines = [f"{key}={value}" for key, value in tags.items()]
+        tags_block = '\n'.join(tag_lines)
         
-        for key, value in tags.items():
-            lines.append(f"  {key}={value}")
+        template = f"""Copy-paste these tags into the OSM iD editor tag panel:
+
+```
+{tags_block}
+```
+
+Changeset comment:
+
+```
+{changeset_comment}
+```
+
+Note: Please verify these tags manually before applying."""
         
-        lines.extend([
-            "",
-            "Changeset Comment:",
-            f"  {changeset_comment}",
-            "",
-            "Note: Please verify these tags manually before applying."
-        ])
-        
-        return '\n'.join(lines)
+        return template

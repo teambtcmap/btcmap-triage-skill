@@ -66,10 +66,10 @@ Edit `config/config.yaml`:
 
 ```yaml
 weights:
-  osm_check: 35          # Increase if OSM accuracy is critical
-  website_check: 20      # Decrease if many merchants lack websites
+  osm_check: 25          # Increase if your region has high OSM coverage
+  website_check: 25      # Decrease if many merchants lack websites
   social_media: 15       # Adjust based on your region
-  cross_reference: 20
+  cross_reference: 25    # Increase if Google Maps/Yelp are comprehensive
   data_consistency: 10
 ```
 

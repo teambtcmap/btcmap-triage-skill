@@ -15,10 +15,10 @@ class ConfidenceScorer:
         """Initialize with configuration."""
         self.config = config
         self.weights = config.get('weights', {
-            'osm_check': 30,
-            'website_check': 25,
+            'osm_check': 20,
+            'website_check': 30,
             'social_media': 20,
-            'cross_reference': 15,
+            'cross_reference': 20,
             'data_consistency': 10
         })
         self.phase2_weights = config.get('phase2_weights', {

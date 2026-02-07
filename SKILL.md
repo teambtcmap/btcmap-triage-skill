@@ -65,23 +65,23 @@ rate_limiting:
 
 For each issue, the skill automatically checks:
 
-1. **OSM Verification** (30% weight)
-   - Check if merchant exists in OpenStreetMap
-   - Verify coordinates match
-   - Check for existing `currency:XBT` tags
-   - Validate address consistency
+1. **OSM Verification** (20% weight)
+   - Check if merchant already exists in OpenStreetMap
+   - Verify coordinates match, check for existing `currency:XBT` tags
+   - Note: Many legitimate businesses are not yet on OSM, so absence is
+     not heavily penalized — this check is a bonus for existing presence
 
-2. **Website Verification** (25% weight)
+2. **Website Verification** (30% weight)
    - Scrape submitted website for Bitcoin acceptance
    - Look for "Bitcoin accepted" text, BTC logos, payment mentions
-   - Check for conflicting information
+   - Primary verification signal for new submissions
 
 3. **Social Media Verification** (20% weight)
    - Check Twitter/X account existence
    - Look for Bitcoin-related posts
    - Verify business legitimacy
 
-4. **Cross-Reference Verification** (15% weight)
+4. **Cross-Reference Verification** (20% weight)
    - Check Google Maps for business listing
    - Verify Yelp presence
    - Cross-check other mapping sources
@@ -119,10 +119,10 @@ If you **do** have outreach capability:
 
 ```
 Phase 1 Score (0-100%):
-  OSM Check: 30%
-  Website Check: 25%
+  OSM Check: 20%       (bonus — absence is not a heavy penalty)
+  Website Check: 30%   (primary signal)
   Social Media: 20%
-  Cross-Reference: 15%
+  Cross-Reference: 20%
   Data Consistency: 10%
 
 Phase 2 Bonus (up to +35%):
@@ -262,20 +262,20 @@ issue progress is tracked via Gitea comments instead.
 
 ## OSM Edit Suggestions
 
-For verified merchants, the skill generates copy-paste ready OSM edit suggestions:
+For verified merchants, the skill generates tags formatted for direct copy-paste
+into the OSM iD editor tag panel (one `key=value` per line, no extra formatting):
 
 **Example Output**:
 ```
-Suggested OSM Tags:
-  currency:XBT=yes
-  payment:lightning=yes
-  payment:onchain=yes
-  check_date:currency:XBT=2026-02-07
+currency:XBT=yes
+payment:lightning=yes
+payment:onchain=yes
+check_date:currency:XBT=2026-02-07
+```
 
-Changeset Comment:
-  Add Bitcoin acceptance for Coldwater Mountain Brewpub
-  #btcmap issue:12079
-  Source: Verified via website and email confirmation
+Changeset comment (paste into the changeset comment field):
+```
+Add Bitcoin acceptance for Coldwater Mountain Brewpub #btcmap issue:12079 Source: Verified via website and email confirmation
 ```
 
 ## Edge Cases & Error Handling

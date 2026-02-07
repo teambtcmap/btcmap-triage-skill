@@ -21,11 +21,14 @@ phase2_auto_send: false
 # Confidence Weights (Phase 1)
 # Adjust these based on your region and verification priorities
 # Total should equal 100
+# Note: OSM weight is intentionally lower because many legitimate businesses
+# are not yet mapped in OpenStreetMap. Being on OSM is a strong positive signal
+# but absence should not heavily penalize new submissions.
 weights:
-  osm_check: 30           # Verify in OpenStreetMap
-  website_check: 25       # Scrape website for Bitcoin mentions
+  osm_check: 20           # Bonus if already in OpenStreetMap (many places aren't)
+  website_check: 30       # Primary signal — scrape website for Bitcoin mentions
   social_media: 20        # Check Twitter/Instagram
-  cross_reference: 15     # Google Maps, Yelp, etc.
+  cross_reference: 20     # Google Maps, Yelp, etc. — confirms business exists
   data_consistency: 10    # Address, phone, hours validation
 
 # Phase 2 Bonus Weights

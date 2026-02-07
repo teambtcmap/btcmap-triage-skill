@@ -38,32 +38,32 @@ class Phase1Verifier:
             'max_score': 100
         }
         
-        # Run each check
+        # Run each check (max scores come from configured weights)
         print("  [Phase 1] Checking OSM...", end=" ")
         results['checks']['osm'] = self._check_osm(issue_data)
-        print(f"{results['checks']['osm']['status']} ({results['checks']['osm']['score']}/30)")
+        print(f"{results['checks']['osm']['status']} ({results['checks']['osm']['score']}/{self.weights['osm_check']})")
         
         time.sleep(self.config['rate_limiting']['web_scrape_delay_seconds'])
         
         print("  [Phase 1] Checking website...", end=" ")
         results['checks']['website'] = self._check_website(issue_data)
-        print(f"{results['checks']['website']['status']} ({results['checks']['website']['score']}/25)")
+        print(f"{results['checks']['website']['status']} ({results['checks']['website']['score']}/{self.weights['website_check']})")
         
         time.sleep(self.config['rate_limiting']['web_scrape_delay_seconds'])
         
         print("  [Phase 1] Checking social media...", end=" ")
         results['checks']['social'] = self._check_social_media(issue_data)
-        print(f"{results['checks']['social']['status']} ({results['checks']['social']['score']}/20)")
+        print(f"{results['checks']['social']['status']} ({results['checks']['social']['score']}/{self.weights['social_media']})")
         
         time.sleep(self.config['rate_limiting']['web_scrape_delay_seconds'])
         
         print("  [Phase 1] Cross-referencing...", end=" ")
         results['checks']['cross_reference'] = self._check_cross_reference(issue_data)
-        print(f"{results['checks']['cross_reference']['status']} ({results['checks']['cross_reference']['score']}/15)")
+        print(f"{results['checks']['cross_reference']['status']} ({results['checks']['cross_reference']['score']}/{self.weights['cross_reference']})")
         
         print("  [Phase 1] Validating data...", end=" ")
         results['checks']['consistency'] = self._check_data_consistency(issue_data)
-        print(f"{results['checks']['consistency']['status']} ({results['checks']['consistency']['score']}/10)")
+        print(f"{results['checks']['consistency']['status']} ({results['checks']['consistency']['score']}/{self.weights['data_consistency']})")
         
         # Calculate total score
         results['score'] = sum(check['score'] for check in results['checks'].values())
@@ -156,12 +156,18 @@ class Phase1Verifier:
         return data
     
     def _check_osm(self, data: Dict) -> Dict:
-        """Check OpenStreetMap for existing location."""
+        """Check OpenStreetMap for existing location.
+        
+        Note: Many legitimate businesses are not yet on OSM, so absence is not
+        heavily penalized. This check is a bonus for existing presence rather
+        than a penalty for absence.
+        """
+        max_score = self.weights['osm_check']
         result = {
             'check_name': 'OSM Verification',
             'status': 'fail',
             'score': 0,
-            'max_score': self.weights['osm_check'],
+            'max_score': max_score,
             'details': {}
         }
         
@@ -179,12 +185,16 @@ class Phase1Verifier:
             #   POST https://overpass-api.de/api/interpreter
             #   Query: [out:json][timeout:25];(node["name"](around:50,{lat},{lon});way["name"](around:50,{lat},{lon}););out body;
             #   Then check if any returned elements match the merchant name.
-            #   Score 30/30 if name + coordinates + bitcoin tags match,
-            #   15/30 for coordinates-only match, 0/30 if not found.
+            #
+            #   Scoring (OSM presence is a bonus, not a requirement):
+            #   - Full match (name + coords + bitcoin tags): max_score
+            #   - Partial match (coords only): max_score * 0.6
+            #   - Not found on OSM: max_score * 0.25 (baseline — don't penalize absence)
+            #   Many legitimate businesses simply haven't been mapped yet.
             #   See references/CONFIDENCE_ALGORITHM.md for full scoring rubric.
             result['status'] = 'unclear'
-            result['score'] = 10  # Partial credit for having coordinates
-            result['details']['note'] = 'Coordinates provided but OSM existence requires manual verification'
+            result['score'] = max(5, int(max_score * 0.25))  # Baseline for valid coordinates
+            result['details']['note'] = 'Coordinates provided. Not being on OSM is common and not heavily penalized.'
             
         except (ValueError, TypeError) as e:
             result['details']['error'] = f'Invalid coordinates: {e}'
