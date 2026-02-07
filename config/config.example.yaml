@@ -1,0 +1,144 @@
+# BTC Map Triage Configuration
+# Copy this file to config.yaml and set your Gitea token
+
+# Operation Mode
+# Options: single (one issue), batch (multiple), continuous (monitor), ask (prompt each time)
+operation_mode: ask
+
+# Default number of issues to process (used in batch mode)
+default_batch_size: 10
+
+# Phase Settings
+enable_phase1: true
+enable_phase2: true
+
+# If Phase 1 confidence >= this threshold, skip Phase 2
+phase1_threshold: 70
+
+# If true, auto-send outreach; if false, draft only for review
+phase2_auto_send: false
+
+# Confidence Weights (Phase 1)
+# Adjust these based on your region and verification priorities
+# Total should equal 100
+weights:
+  osm_check: 30           # Verify in OpenStreetMap
+  website_check: 25       # Scrape website for Bitcoin mentions
+  social_media: 20        # Check Twitter/Instagram
+  cross_reference: 15     # Google Maps, Yelp, etc.
+  data_consistency: 10    # Address, phone, hours validation
+
+# Phase 2 Bonus Weights
+# These add to Phase 1 score (max bonus: 35)
+phase2_weights:
+  email_confirmation: 20
+  social_dm_confirmation: 15
+
+# Confidence Thresholds
+# Determines recommendation level
+thresholds:
+  high: 90          # Auto-approve candidate
+  medium: 70        # Recommend approval
+  low: 50           # Needs human review
+
+# Gitea API Configuration
+# Get your token from: https://gitea.btcmap.org/user/settings/applications
+gitea:
+  base_url: https://gitea.btcmap.org
+  token: ${GITEA_TOKEN}  # Set via environment variable or replace with string
+  repo: teambtcmap/btcmap-data
+  
+# Issue Labels to Process
+# Only fetch issues with these labels
+issue_labels:
+  - type/location-submission
+  - type/location-verification
+
+# Rate Limiting
+# Adjust based on Gitea API limits and politeness
+rate_limiting:
+  gitea_requests_per_minute: 30
+  web_scrape_delay_seconds: 2
+  osm_requests_per_minute: 60
+  max_retries: 3
+  retry_delay_seconds: 5
+
+# Matrix Integration (Optional)
+# Requires agent to have Matrix skill
+matrix:
+  enabled: true
+  room: "#btcmap-taggers:matrix.org"
+  message_on_start: true
+  message_on_complete: true
+
+# Scraping Configuration
+scraping:
+  # User agent for web requests
+  user_agent: "BTCMap-Triage-Bot/1.0"
+  
+  # Timeout for web requests (seconds)
+  timeout: 30
+  
+  # Respect robots.txt
+  respect_robots_txt: true
+  
+  # Maximum page size to download (bytes)
+  max_page_size: 1048576  # 1MB
+
+# Email Templates (Phase 2)
+# Customize these for your outreach
+email:
+  from_name: "BTC Map Verification"
+  subject_template: "Verification Request: {merchant_name}"
+  
+# Social Media Templates
+social:
+  twitter_dm_template: |
+    Hi! We're verifying Bitcoin acceptance for {merchant_name} on BTC Map.
+    Could you confirm you accept Bitcoin payments?
+    Thank you!
+  
+  instagram_dm_template: |
+    Hi there! We're mapping Bitcoin-accepting businesses on BTC Map.
+    Can you confirm {merchant_name} accepts Bitcoin?
+    Thanks!
+
+# Output Configuration
+output:
+  # Format: markdown, json, or both
+  format: markdown
+  
+  # Include raw API response data in reports
+  include_raw_data: false
+  
+  # Post Phase 1 report immediately (before Phase 2)
+  post_phase1_immediately: true
+  
+  # Update Phase 1 comment with final results (vs posting new comment)
+  update_phase1_comment: true
+  
+  # Generate OSM edit suggestions
+  include_osm_suggestions: true
+
+# Logging
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR
+  file: logs/btcmap-triage.log
+  console: true
+
+# Advanced Settings
+advanced:
+  # Verify SSL certificates
+  verify_ssl: true
+  
+  # Timeout for entire issue processing (seconds)
+  issue_timeout: 300
+  
+  # Maximum Phase 2 wait time for responses (hours)
+  phase2_wait_hours: 24
+  
+  # Skip issues assigned to other users
+  skip_assigned_issues: true
+  
+  # Only process issues newer than X days (0 = all)
+  max_issue_age_days: 0

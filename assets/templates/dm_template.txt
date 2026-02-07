@@ -1,0 +1,13 @@
+Hi there! 👋
+
+We're from BTC Map (btcmap.org), a community project mapping businesses that accept Bitcoin worldwide.
+
+We have {merchant_name} listed as accepting Bitcoin. Could you please confirm if this is still accurate?
+
+✅ Yes, we accept Bitcoin
+❌ No, we don't accept Bitcoin
+
+Thank you! 🙏
+
+---
+BTC Map Verification Team

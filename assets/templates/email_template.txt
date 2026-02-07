@@ -1,0 +1,34 @@
+Subject: Verification Request: {merchant_name}
+
+Dear {merchant_name} Team,
+
+I hope this email finds you well. I'm reaching out from BTC Map (https://btcmap.org), a community-driven project that creates a comprehensive map of businesses accepting Bitcoin payments worldwide.
+
+We recently received information indicating that {merchant_name} accepts Bitcoin. To ensure our data is accurate and up-to-date, we would greatly appreciate your confirmation on the following:
+
+**Primary Question:**
+Does {merchant_name} currently accept Bitcoin as a form of payment?
+
+**Additional Details (if applicable):**
+1. Do you accept on-chain Bitcoin payments?
+2. Do you accept Lightning Network payments?
+3. Is a specific companion app or payment processor required?
+
+If you do NOT currently accept Bitcoin, please let us know so we can update our records accordingly and avoid any confusion for Bitcoin users.
+
+**Why this matters:**
+BTC Map helps Bitcoin users find places to spend their Bitcoin, supporting the circular economy. Accurate information ensures a positive experience for both merchants and customers.
+
+**How to respond:**
+Simply reply to this email with "Yes, we accept Bitcoin" or "No, we do not accept Bitcoin." Any additional details about payment methods are appreciated but not required.
+
+Thank you for taking the time to verify this information. Your response helps the entire Bitcoin community!
+
+Best regards,
+BTC Map Verification Team
+https://btcmap.org
+
+---
+**Issue Reference**: #{issue_number}
+**Submitted**: {submission_date}
+**This is an automated verification request. Please reply to confirm or correct the information.**
