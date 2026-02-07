@@ -68,8 +68,8 @@ rate_limiting:
 matrix:
   enabled: true
   room: "#btcmap-taggers:matrix.org"
-  message_on_start: true
-  message_on_complete: true
+  daily_summary: true           # Post a daily triage summary to the room
+  respond_to_mentions: true     # Monitor and respond when mentioned in the room
 
 # Scraping Configuration
 scraping:

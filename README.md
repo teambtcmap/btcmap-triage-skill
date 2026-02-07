@@ -192,15 +192,21 @@ The **Shadowy Supertaggers** are the community members who verify BTC Map submis
 and apply OSM edits. They coordinate via Matrix at `#btcmap-taggers:matrix.org`.
 
 Join this room to engage with other taggers: request local/physical verification,
-coordinate to avoid duplicate work, share findings, and announce triage runs.
+coordinate to avoid duplicate work, and share findings.
 
 ```yaml
 matrix:
   enabled: true
   room: "#btcmap-taggers:matrix.org"
-  message_on_start: true      # Announce when a triage batch begins
-  message_on_complete: true   # Post summary when batch finishes
+  daily_summary: true           # Post a daily triage summary to the room
+  respond_to_mentions: true     # Monitor and respond when mentioned in the room
 ```
+
+When `respond_to_mentions` is enabled, the agent monitors the room and replies to
+queries about issue status, verification requests, and general questions. When
+`daily_summary` is enabled, a once-daily summary is posted with counts of processed,
+approved, and rejected issues. Individual issue progress is tracked via Gitea
+comments rather than chat messages to avoid noise.
 
 Requires the agent to have Matrix skills configured.
 

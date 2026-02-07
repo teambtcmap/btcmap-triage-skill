@@ -227,12 +227,38 @@ Join this room to:
 - **Ask for physical verification** when a submission can't be verified remotely
   (e.g., no website, no social media, no email response)
 - **Share findings** such as conflicting information or suspected spam patterns
-- **Announce triage runs** so other taggers know which issues are being processed
 
-If the agent has Matrix capability and `matrix.enabled` is `true` in config:
-- Post a message when starting a triage batch (if `message_on_start: true`)
-- Post a summary when the batch completes (if `message_on_complete: true`)
-- Tag the room when a submission needs local/physical verification
+### Responding to Mentions
+
+If `respond_to_mentions` is enabled, monitor the room for messages that mention
+the bot or ask about specific issues. When mentioned:
+
+1. **Issue queries** (e.g., "what's the status of #12079?") — Look up the issue
+   on Gitea and reply with the current status, labels, and latest triage comment.
+2. **Verification requests** (e.g., "can someone check this shop in Nairobi?") —
+   If coordinates or an issue number are provided, run Phase 1 checks and reply
+   with a summary. Post the full report to the Gitea issue.
+3. **General questions** — Reply with relevant info from the skill's reference
+   docs (scoring algorithm, tag reference, etc.).
+
+Keep Matrix replies short and conversational. The detailed reports belong in
+Gitea issue comments, not in chat.
+
+### Daily Summary
+
+If `daily_summary` is enabled, post a summary to the room once per day:
+
+```
+BTC Map Triage Summary (2026-02-07):
+- Issues processed: 12
+- Approved: 4
+- Needs review: 6
+- Rejected: 2
+- Oldest unprocessed issue: #11982 (3 days old)
+```
+
+This keeps taggers informed without spamming per-issue notifications — individual
+issue progress is tracked via Gitea comments instead.
 
 ## OSM Edit Suggestions
 
