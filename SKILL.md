@@ -1,6 +1,12 @@
 ---
 name: btcmap-triage
-description: Automates BTC Map issue triage including two-phase verification of location submissions (automated checks and outreach), confidence scoring, and posting verification reports to Gitea. Use when working with BTC Map location submissions, merchant verifications, or verifying Bitcoin-accepting businesses. Handles location-submission and location-verification issues from the btcmap-data repository.
+description: >
+  Automates BTC Map issue triage including two-phase verification of location 
+  submissions (automated checks and outreach), confidence scoring, and posting 
+  verification reports to Gitea. Use when working with BTC Map location 
+  submissions, merchant verifications, or verifying Bitcoin-accepting businesses. 
+  Handles location-submission and location-verification issues from the 
+  btcmap-data repository.
 license: MIT
 compatibility: Requires Python 3.9+, internet access, Gitea API token, and agent email skill for Phase 2 outreach. Optional: Matrix skill for joining Supertagger room.
 metadata:
