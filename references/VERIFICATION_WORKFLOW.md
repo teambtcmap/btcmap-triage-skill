@@ -67,6 +67,19 @@ existing presence**, not a penalty for absence.
 - Verify account activity
 - Check follower count (legitimacy indicator)
 
+**Important: URL Extraction**
+When social media is found, **EXTRACT and record the actual URLs**:
+- `https://instagram.com/username`
+- `https://facebook.com/pagename`
+- `https://twitter.com/handle`
+
+These URLs should be added to the OSM template as:
+```
+contact:instagram=https://instagram.com/username
+contact:facebook=https://facebook.com/pagename
+contact:twitter=https://twitter.com/handle
+```
+
 **Scoring**:
 - Active account with Bitcoin posts: 20/20
 - Active account, no Bitcoin mention: 10/20
@@ -77,6 +90,7 @@ existing presence**, not a penalty for absence.
 - Recent posts (within 6 months)
 - Engagement (replies, likes)
 - Bitcoin hashtags (#Bitcoin, #BTC, #LightningNetwork)
+- URL successfully extracted for OSM tagging
 
 #### 2.4 Cross-Reference Verification (20% weight)
 **Purpose**: Verify business existence on other platforms
