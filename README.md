@@ -188,12 +188,18 @@ Action: Ask for website or phone verification
 
 ## Matrix Integration
 
-The skill can join the Shadowy Supertagger Matrix room for coordination:
+The **Shadowy Supertaggers** are the community members who verify BTC Map submissions
+and apply OSM edits. They coordinate via Matrix at `#btcmap-taggers:matrix.org`.
+
+Join this room to engage with other taggers: request local/physical verification,
+coordinate to avoid duplicate work, share findings, and announce triage runs.
 
 ```yaml
 matrix:
   enabled: true
   room: "#btcmap-taggers:matrix.org"
+  message_on_start: true      # Announce when a triage batch begins
+  message_on_complete: true   # Post summary when batch finishes
 ```
 
 Requires the agent to have Matrix skills configured.

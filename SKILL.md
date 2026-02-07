@@ -34,6 +34,8 @@ This skill automates the verification and triage of BTC Map location issues. It 
    ```
    Join #btcmap-taggers:matrix.org
    ```
+   This is where the Shadowy Supertaggers coordinate. Useful for requesting
+   local verification and avoiding duplicate work.
 
 3. **Run triage**:
    ```bash
@@ -212,13 +214,25 @@ The skill interacts with Gitea to:
 
 ## Matrix Integration
 
-Join the Shadowy Supertagger room for coordination:
+The **Shadowy Supertaggers** are the BTC Map community members who verify submissions
+and apply OSM edits. They coordinate in a Matrix room:
 
 ```
 Room: #btcmap-taggers:matrix.org
 ```
 
-The skill will remind you to join this room if you have Matrix skill enabled.
+Join this room to:
+- **Request help** with low-confidence verifications that need local knowledge
+- **Coordinate** to avoid duplicate work when multiple taggers are active
+- **Ask for physical verification** when a submission can't be verified remotely
+  (e.g., no website, no social media, no email response)
+- **Share findings** such as conflicting information or suspected spam patterns
+- **Announce triage runs** so other taggers know which issues are being processed
+
+If the agent has Matrix capability and `matrix.enabled` is `true` in config:
+- Post a message when starting a triage batch (if `message_on_start: true`)
+- Post a summary when the batch completes (if `message_on_complete: true`)
+- Tag the room when a submission needs local/physical verification
 
 ## OSM Edit Suggestions
 
