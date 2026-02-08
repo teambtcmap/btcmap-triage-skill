@@ -92,6 +92,45 @@ For each issue, the skill automatically checks:
    - Verify opening hours syntax
    - Validate category against BTC Map taxonomy
 
+### Square Import Verification (Trusted Source)
+
+Issues with the `import/square` label are **automatically verified** for Bitcoin acceptance:
+
+- **Trust basis**: Square is a known Bitcoin payment processor
+- **Bitcoin verification**: CONFIRMED (no Phase 2 outreach needed)
+- **Scoring adjustment**: 
+  - Website Check: Auto-assigned 30/30 (Bitcoin confirmed via Square)
+  - Phase 2: SKIPPED (not required)
+- **Confidence floor**: Minimum 30% from Bitcoin verification alone
+
+**Example scoring for Square import:**
+```
+OSM Check: 5/20 (not found)
+Square Bitcoin: 30/30 (auto-confirmed)
+Cross-Reference: 15/20 (Yelp/Google match)
+Social Media: 5/20 (limited presence)
+Data Consistency: 10/10 (valid)
+Total: 65% → MEDIUM confidence, APPROVED for import
+```
+
+**Required Square OSM Tags:**
+For merchants imported via Square, include these tags in the OSM edit:
+
+```
+currency:XBT=yes
+payment:lightning=yes
+payment:lightning_contactless=no
+payment:onchain=no
+payment:lightning:operator=square
+check_date:currency:XBT=YYYY-MM-DD
+check_date=YYYY-MM-DD
+source=square  # For new nodes only
+```
+
+Note: Square imports still require OSM verification (does node exist?) and
+should follow the complete tagging guidance at:
+https://gitea.btcmap.org/teambtcmap/btcmap-general/wiki/Tagging-Square-Merchants
+
 ### Phase 2: Outreach Verification
 
 Phase 2 is **only triggered** if Phase 1 confidence is below threshold (default: 70%).
@@ -134,6 +173,11 @@ Final Score Thresholds:
   70-89%: MEDIUM confidence → Recommend approval with notes
   50-69%: LOW confidence → Needs human review
   0-49%: VERY LOW → Recommend rejection/more info
+
+**Square Import Adjustment:**
+For issues with `import/square` label, the Website Check score is automatically
+set to 30/30 (Bitcoin confirmed), and Phase 2 is skipped. Minimum Phase 1 score
+is 30% from Bitcoin verification alone.
 ```
 
 All weights are configurable in `config/config.yaml`.
