@@ -8,6 +8,19 @@ This document provides example issue data for testing and development.
 
 Issues imported automatically from Square payment processor.
 
+**Note on JSON Format:** Square imports use **raw JSON** (not fenced code blocks). The `Extra fields:` section contains JSON directly without ` ```json ` markers:
+
+```
+Extra fields:
+
+{
+"address": "...",
+"opening_hours": "..."
+}
+```
+
+When parsing, look for `Extra fields:\s*\n\n(\{.*?\})` pattern, not fenced code blocks. See [PARSING_PITFALLS.md](PARSING_PITFALLS.md) for more details.
+
 ```yaml
 issue_number: 12079
 title: Coldwater Mountain Brewpub

@@ -329,6 +329,7 @@ adding custom verification checks), see [references/EXAMPLES_AND_CUSTOMIZATION.m
 - [Example Issues](references/EXAMPLE_ISSUES.md)
 - [Gitea API Reference](references/GITEA_API_REFERENCE.md)
 - [Examples and Customization](references/EXAMPLES_AND_CUSTOMIZATION.md)
+- [Common Parsing Pitfalls](references/PARSING_PITFALLS.md) - Important for agent implementations
 
 ## Troubleshooting
 
