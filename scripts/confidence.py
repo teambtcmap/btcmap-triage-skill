@@ -64,6 +64,32 @@ class ConfidenceScorer:
         final_score = phase1_score + phase2_bonus
         return min(final_score, 100)  # Cap at 100
     
+    def is_square_import(self, issue_data: Dict) -> bool:
+        """Check if issue is a Square import (trusted Bitcoin source)."""
+        labels = issue_data.get('labels', [])
+        return any(label.get('name') == 'import/square' for label in labels)
+    
+    def apply_square_bitcoin_verified(self, phase1_results: Dict) -> Dict:
+        """Override website check score for Square imports.
+        
+        Square is a known Bitcoin payment processor, so Bitcoin acceptance
+        is confirmed for all Square imports.
+        """
+        if 'checks' not in phase1_results:
+            phase1_results['checks'] = {}
+        
+        phase1_results['checks']['website_check'] = {
+            'result': 'TRUSTED',
+            'score': 30,  # Full weight for Bitcoin verification
+            'max_score': 30,
+            'notes': 'Square import - Bitcoin acceptance verified (trusted source)'
+        }
+        
+        # Mark Phase 2 as not needed
+        phase1_results['skip_phase2'] = True
+        
+        return phase1_results
+    
     def get_recommendation(self, score: int) -> str:
         """Get recommendation based on confidence score."""
         high_threshold = self.thresholds.get('high', 90)
