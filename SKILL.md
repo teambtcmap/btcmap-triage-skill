@@ -66,20 +66,34 @@ rate_limiting:
 For each issue, the skill automatically checks:
 
 1. **OSM Verification** (20% weight)
-   - Check if merchant already exists in OpenStreetMap
-   - Verify coordinates match, check for existing `currency:XBT` tags
+   - Search for existing nodes within **100m radius** of submitted coordinates
+   - Use Overpass API: `node["name"](around:100,{lat},{lon})`
+   - Check for existing `currency:XBT` tags on nearby nodes
+   - Verify coordinates match merchant location (not just exact lat/lon)
    - Note: Many legitimate businesses are not yet on OSM, so absence is
      not heavily penalized — this check is a bonus for existing presence
+   - **Report format:** "No existing node within 100m of {lat}, {lon}"
 
 2. **Website Verification** (30% weight)
    - Scrape submitted website for Bitcoin acceptance
    - Look for "Bitcoin accepted" text, BTC logos, payment mentions
    - Primary verification signal for new submissions
 
-3. **Social Media Verification** (20% weight)
-   - Check Twitter/X account existence
-   - Look for Bitcoin-related posts
-   - Verify business legitimacy
+3. **Social Media Verification** (20% weight) - **REQUIRED**
+   - **Search Facebook** for merchant name + location
+   - **Search Instagram** for merchant name + location
+   - **Check Twitter/X** if applicable
+   - **Evidence to capture:**
+     - Social media profile URLs (`contact:facebook=`, `contact:instagram=`)
+     - Business legitimacy indicators (posting activity, followers, location tags)
+     - Photos of storefront/operations
+   - **MUST include in Gitea comment:** All found social URLs with verification status
+   - **MUST include in OSM tags:** `contact:facebook=` and/or `contact:instagram=` when found
+   - **Scoring:**
+     - 20/20: Multiple active social profiles found and verified
+     - 10/20: One social profile found, limited activity
+     - 5/20: Profile found but unverified/unclaimed
+     - 0/20: No social presence found or search blocked
 
 4. **Cross-Reference Verification** (20% weight)
    - Check Google Maps for business listing
@@ -99,14 +113,15 @@ Issues with the `import/square` label are **automatically verified** for Bitcoin
 - **Trust basis**: Square is a known Bitcoin payment processor
 - **Bitcoin verification**: CONFIRMED (no Phase 2 outreach needed)
 - **Scoring adjustment**: 
-  - Website Check: Auto-assigned 30/30 (Bitcoin confirmed via Square)
+  - Bitcoin Check: 30/30 (verified via Square import)
+  - Website Check: N/A (Square provides Bitcoin verification)
   - Phase 2: SKIPPED (not required)
 - **Confidence floor**: Minimum 30% from Bitcoin verification alone
 
 **Example scoring for Square import:**
 ```
 OSM Check: 5/20 (not found)
-Square Bitcoin: 30/30 (auto-confirmed)
+Bitcoin Check: 30/30 (verified via Square)
 Cross-Reference: 15/20 (Yelp/Google match)
 Social Media: 5/20 (limited presence)
 Data Consistency: 10/10 (valid)
@@ -315,7 +330,15 @@ currency:XBT=yes
 payment:lightning=yes
 payment:onchain=yes
 check_date:currency:XBT=2026-02-07
+contact:facebook=https://facebook.com/merchantname
+contact:instagram=https://instagram.com/merchantname
 ```
+
+**Required social media verification:**
+- Search Facebook and Instagram for the merchant by name + location
+- Include found URLs in both the Gitea comment AND OSM `contact:` tags
+- If search is blocked (403, JS-required), note this in the report
+- Score 0/20 for social verification if not attempted or blocked
 
 Changeset comment (paste into the changeset comment field):
 ```
