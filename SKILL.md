@@ -322,16 +322,22 @@ issue progress is tracked via Gitea comments instead.
 ## OSM Edit Suggestions
 
 For verified merchants, the skill generates tags formatted for direct copy-paste
-into the OSM iD editor tag panel (one `key=value` per line, no extra formatting):
+into the OSM iD editor tag panel (one `key=value` per line, no extra formatting).
+
+Any website URL or social media accounts discovered during verification are
+included as `contact:*` tags so the OSM node gets populated with useful contact info.
 
 **Example Output**:
 ```
+name=Coldwater Mountain Brewpub
 currency:XBT=yes
 payment:lightning=yes
 payment:onchain=yes
 check_date:currency:XBT=2026-02-07
-contact:facebook=https://facebook.com/merchantname
-contact:instagram=https://instagram.com/merchantname
+contact:website=https://coldwatermountainbrewpub.com
+contact:twitter=https://twitter.com/coldwaterbrew
+contact:instagram=https://instagram.com/coldwatermountainbrewpub
+contact:phone=+1-256-555-0123
 ```
 
 **Required social media verification:**
