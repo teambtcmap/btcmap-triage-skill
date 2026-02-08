@@ -119,17 +119,29 @@ class OSMClient:
                     merchant_name: Optional[str] = None,
                     payment_lightning: bool = True,
                     payment_onchain: bool = True,
-                    check_date: Optional[str] = None) -> Dict:
+                    check_date: Optional[str] = None,
+                    website: Optional[str] = None,
+                    phone: Optional[str] = None,
+                    social_handles: Optional[Dict] = None) -> Dict:
         """Generate suggested OSM tags for Bitcoin acceptance.
         
         Returns tags in insertion order so they can be copy-pasted directly
         into the OSM iD editor tag panel as key=value lines.
+        
+        Any social media handles or website URLs discovered during verification
+        are included as contact:* tags so they get added to the OSM node.
         
         Args:
             merchant_name: Merchant name (included if the node is new)
             payment_lightning: Accept Lightning payments
             payment_onchain: Accept on-chain payments
             check_date: Verification date (ISO format)
+            website: Merchant website URL
+            phone: Merchant phone number
+            social_handles: Dict of platform -> URL/handle, e.g.
+                {"twitter": "https://twitter.com/merchant",
+                 "instagram": "https://instagram.com/merchant",
+                 "facebook": "https://facebook.com/merchant"}
             
         Returns:
             Dictionary of suggested tags
@@ -148,6 +160,28 @@ class OSMClient:
             tags['payment:onchain'] = 'yes'
         
         tags['check_date:currency:XBT'] = check_date or time.strftime('%Y-%m-%d')
+        
+        # Contact tags — include website, phone, and any social handles found
+        if website:
+            tags['contact:website'] = website
+        
+        if phone:
+            tags['contact:phone'] = phone
+        
+        if social_handles:
+            # Map platform names to OSM contact:* tag keys
+            platform_tag_map = {
+                'twitter': 'contact:twitter',
+                'instagram': 'contact:instagram',
+                'facebook': 'contact:facebook',
+                'linkedin': 'contact:linkedin',
+                'youtube': 'contact:youtube',
+                'tiktok': 'contact:tiktok',
+            }
+            for platform, url in social_handles.items():
+                tag_key = platform_tag_map.get(platform, f'contact:{platform}')
+                if url:
+                    tags[tag_key] = url
         
         return tags
     
@@ -260,6 +294,31 @@ Source: Verified via {methods_str}"""
             'survey:date': {
                 'description': 'Date of physical survey/verification',
                 'values': 'YYYY-MM-DD format',
+                'required': False
+            },
+            'contact:website': {
+                'description': 'Merchant website URL',
+                'values': 'Full URL (https://...)',
+                'required': False
+            },
+            'contact:phone': {
+                'description': 'Merchant phone number',
+                'values': 'International format preferred',
+                'required': False
+            },
+            'contact:twitter': {
+                'description': 'Twitter/X profile URL',
+                'values': 'Full URL (https://twitter.com/handle)',
+                'required': False
+            },
+            'contact:instagram': {
+                'description': 'Instagram profile URL',
+                'values': 'Full URL (https://instagram.com/handle)',
+                'required': False
+            },
+            'contact:facebook': {
+                'description': 'Facebook page URL',
+                'values': 'Full URL (https://facebook.com/page)',
                 'required': False
             }
         }
