@@ -66,20 +66,34 @@ rate_limiting:
 For each issue, the skill automatically checks:
 
 1. **OSM Verification** (20% weight)
-   - Check if merchant already exists in OpenStreetMap
-   - Verify coordinates match, check for existing `currency:XBT` tags
+   - Search for existing nodes within **100m radius** of submitted coordinates
+   - Use Overpass API: `node["name"](around:100,{lat},{lon})`
+   - Check for existing `currency:XBT` tags on nearby nodes
+   - Verify coordinates match merchant location (not just exact lat/lon)
    - Note: Many legitimate businesses are not yet on OSM, so absence is
      not heavily penalized — this check is a bonus for existing presence
+   - **Report format:** "No existing node within 100m of {lat}, {lon}"
 
 2. **Website Verification** (30% weight)
    - Scrape submitted website for Bitcoin acceptance
    - Look for "Bitcoin accepted" text, BTC logos, payment mentions
    - Primary verification signal for new submissions
 
-3. **Social Media Verification** (20% weight)
-   - Check Twitter/X account existence
-   - Look for Bitcoin-related posts
-   - Verify business legitimacy
+3. **Social Media Verification** (20% weight) - **REQUIRED**
+   - **Search Facebook** for merchant name + location
+   - **Search Instagram** for merchant name + location
+   - **Check Twitter/X** if applicable
+   - **Evidence to capture:**
+     - Social media profile URLs (`contact:facebook=`, `contact:instagram=`)
+     - Business legitimacy indicators (posting activity, followers, location tags)
+     - Photos of storefront/operations
+   - **MUST include in Gitea comment:** All found social URLs with verification status
+   - **MUST include in OSM tags:** `contact:facebook=` and/or `contact:instagram=` when found
+   - **Scoring:**
+     - 20/20: Multiple active social profiles found and verified
+     - 10/20: One social profile found, limited activity
+     - 5/20: Profile found but unverified/unclaimed
+     - 0/20: No social presence found or search blocked
 
 4. **Cross-Reference Verification** (20% weight)
    - Check Google Maps for business listing
@@ -324,6 +338,12 @@ contact:twitter=https://twitter.com/coldwaterbrew
 contact:instagram=https://instagram.com/coldwatermountainbrewpub
 contact:phone=+1-256-555-0123
 ```
+
+**Required social media verification:**
+- Search Facebook and Instagram for the merchant by name + location
+- Include found URLs in both the Gitea comment AND OSM `contact:` tags
+- If search is blocked (403, JS-required), note this in the report
+- Score 0/20 for social verification if not attempted or blocked
 
 Changeset comment (paste into the changeset comment field):
 ```
