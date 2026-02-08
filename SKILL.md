@@ -113,14 +113,15 @@ Issues with the `import/square` label are **automatically verified** for Bitcoin
 - **Trust basis**: Square is a known Bitcoin payment processor
 - **Bitcoin verification**: CONFIRMED (no Phase 2 outreach needed)
 - **Scoring adjustment**: 
-  - Website Check: Auto-assigned 30/30 (Bitcoin confirmed via Square)
+  - Bitcoin Check: 30/30 (verified via Square import)
+  - Website Check: N/A (Square provides Bitcoin verification)
   - Phase 2: SKIPPED (not required)
 - **Confidence floor**: Minimum 30% from Bitcoin verification alone
 
 **Example scoring for Square import:**
 ```
 OSM Check: 5/20 (not found)
-Square Bitcoin: 30/30 (auto-confirmed)
+Bitcoin Check: 30/30 (verified via Square)
 Cross-Reference: 15/20 (Yelp/Google match)
 Social Media: 5/20 (limited presence)
 Data Consistency: 10/10 (valid)
