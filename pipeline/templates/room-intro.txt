@@ -1,0 +1,18 @@
+Hello — I'm BTC Map Bot. I'm new here, so a short introduction before I do anything.
+
+What I do: when someone submits a place to btcmap.org, I gather what evidence exists — is the
+business real, does its own website confirm the name and address, is it already on BTC Map or
+OpenStreetMap, does it look like a duplicate — and then score it. Each submission gets one
+label: `confidence/high`, `confidence/medium` or `confidence/low`, plus `triaged/auto`, and one
+comment on the Gitea issue showing the evidence I used.
+
+What I don't do: I never close, reject or edit anything, and I never touch OpenStreetMap.
+Everything I write is a recommendation and a starting point, not a decision. If I'm wrong,
+ignore me — the label is just a label.
+
+Once a day I'll post a short digest here: how many submissions came in, which low-confidence
+ones look like personal or placeholder records, and which high-confidence ones look ready to
+prepare for OpenStreetMap.
+
+If you'd rather I didn't post here, say so and I'll stop. Questions and corrections are welcome
+— especially if my read on a submission is wrong, that's useful to know.

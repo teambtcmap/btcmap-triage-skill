@@ -1,0 +1,31 @@
+Subject: Quick check — do you accept Bitcoin at {name}?
+
+Hello,
+
+We run BTC Map (btcmap.org), a community map of businesses that accept Bitcoin. Someone
+submitted {name} at {address} to us, saying you accept {payment_methods}.
+
+We don't add places to the map on a submission alone — we ask first, because a wrong entry
+sends people to a shop that then can't take their money.
+
+Could you confirm one of these?
+
+  [ ] Yes — we accept Bitcoin. You may add us to the map.
+  [ ] Yes, but not at that address — the correct address is: ____________
+  [ ] No — we don't accept Bitcoin (or no longer do).
+  [ ] Not sure — a colleague handles this; please write to: ____________
+
+If you reply "yes", a volunteer adds you to OpenStreetMap, and BTC Map picks it up from
+there. That usually takes a few days. Nothing else is needed from you, and no account is
+required.
+
+We're writing once, about this only. If you'd rather not hear from us again, reply with
+"stop" and we'll note it against this record — we won't contact you again about it.
+
+Thanks,
+{signature}
+BTC Map · https://btcmap.org
+
+--
+Submitted as: {origin} submission #{submission_id} (issue #{issue_number})
+Records we hold for this place: name, address, and the contact detail the submitter left.

@@ -1,0 +1,7 @@
+[Unit]
+Description=BTC Map triage pass (dry run unless run-triage.sh is invoked with --apply)
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/btcmap-triage
+ExecStart=%h/btcmap-triage/run-triage.sh

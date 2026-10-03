@@ -1,0 +1,7 @@
+[Unit]
+Description=BTC Map triage digest for #btcmap-taggers
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/btcmap-triage
+ExecStart=%h/btcmap-triage/run-digest.sh
