@@ -22,6 +22,28 @@ allowed-tools: Bash(python3:*) WebFetch Read Write
 
 This skill automates the verification and triage of BTC Map location issues. It performs two-phase verification, calculates confidence scores, and posts detailed reports to Gitea.
 
+## Current pipeline: `pipeline/`
+
+The two-phase scoring described below still documents the weighted-check approach, the outreach
+templates and the confidence algorithm, but **new triage work runs through `pipeline/`**:
+
+```bash
+python3 pipeline/triage_jev.py --limit 5            # dry run
+python3 pipeline/triage_jev.py --limit 5 --apply    # label + comment on Gitea
+python3 pipeline/digest.py                          # render the daily digest
+python3 pipeline/inbox.py                           # match email replies to issues
+```
+
+It gathers evidence (BTC Map/OSM entries nearby, the merchant's own website read twice, duplicates,
+optional Kagi search), asks Jev 1.13 for a typed judgement, and writes one `confidence/*` label, one
+`triaged/auto` label and one comment per submission. It never closes, rejects or edits anything, and
+never touches OpenStreetMap.
+
+Why it replaced the scoring here, measured against this repo's own labels — 243 submissions:
+separation **AUC 0.887** (0.869 on the legacy body format that is 76% of the history), zero added
+submissions called junk, zero rejected ones queued. Full detail, including the two caveats that limit
+what those numbers mean, is in [`pipeline/README.md`](pipeline/README.md).
+
 ## Quick Start
 
 1. **Configure the skill**:

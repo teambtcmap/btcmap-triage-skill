@@ -1,0 +1,10 @@
+[Unit]
+Description=BTC Map triage pass every 15 minutes (DRY RUN until enabled deliberately)
+
+[Timer]
+OnCalendar=*:0/15
+Persistent=false
+Unit=btcmap-triage.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily BTC Map triage digest (08:00 UTC)
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+Persistent=true
+Unit=btcmap-digest.service
+
+[Install]
+WantedBy=timers.target

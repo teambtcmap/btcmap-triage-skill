@@ -53,3 +53,18 @@ htmlcov/
 # Temporary files
 *.tmp
 *.bak
+
+# Pipeline runtime data — NEVER commit: submissions carry merchant contact details,
+# and these files hold credentials or per-issue personal data.
+pipeline/reports/
+pipeline/evidence-cache.json
+pipeline/jev-scores.json
+pipeline/issues.json
+pipeline/PAUSE
+pipeline/__pycache__/
+*.token
+*.env
+email.env
+matrix.env
+staging-room.id
+outreach-approved
